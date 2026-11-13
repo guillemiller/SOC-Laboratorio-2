@@ -2,17 +2,17 @@
 
 ## Descripción del proyecto
 
-En este laboratorio trabajé con registros de seguridad de Windows utilizando Python para buscar actividades sospechosas, relacionar diferentes eventos y generar alertas que podrían ser útiles durante una investigación de nivel SOC Analyst L1.
+En este laboratorio trabajé con registros de eventos de Windows utilizando Python para identificar actividades sospechosas, correlacionar diferentes eventos y generar alertas que podrían ser útiles durante una investigación de nivel SOC Analyst L1.
 
 Para realizar el ejercicio utilicé registros sintéticos correspondientes al equipo `WS-VENTAS-01`.
 
 ## Objetivos
 
-El objetivo principal fue practicar la investigación de eventos de seguridad de Windows y entender cómo diferentes eventos pueden relacionarse entre sí.
+El objetivo principal fue practicar la investigación de eventos de Windows y comprender cómo diferentes actividades pueden relacionarse entre sí.
 
 Durante el laboratorio trabajé en:
 
-- Análisis de eventos de seguridad de Windows.
+- Análisis de eventos de Windows.
 - Identificación de intentos de inicio de sesión fallidos y exitosos.
 - Detección de creación de cuentas locales y asignación de privilegios administrativos.
 - Identificación de ejecución de PowerShell mediante comandos codificados.
@@ -22,9 +22,9 @@ Durante el laboratorio trabajé en:
 
 ## Herramientas utilizadas
 
-- **Python:** procesamiento, análisis y correlación de los registros.
-- **CSV:** almacenamiento de los eventos y generación de alertas.
-- **Windows Security Event IDs:** identificación y clasificación de las actividades.
+- **Python:** procesamiento, análisis y correlación de registros.
+- **CSV:** almacenamiento de eventos y generación de alertas.
+- **Windows Event IDs:** identificación y clasificación de actividades.
 - **Visual Studio Code:** desarrollo y ejecución del script.
 
 El proyecto utiliza únicamente módulos incluidos en la biblioteca estándar de Python, por lo que no es necesario instalar librerías externas.
@@ -44,7 +44,7 @@ SOC-Laboratorio-2/
 ## Eventos analizados
 
 | Event ID | Descripción |
-| -------- | ----------- |
+|---|---|
 | 4624 | Inicio de sesión exitoso |
 | 4625 | Inicio de sesión fallido |
 | 4720 | Creación de cuenta de usuario |
@@ -56,32 +56,32 @@ SOC-Laboratorio-2/
 
 ## Detecciones implementadas
 
-El script analiza los registros y realiza diferentes comprobaciones, entre ellas:
+El script analiza los registros y realiza diferentes comprobaciones:
 
 1. Validación de las columnas y registros del archivo CSV.
-2. Conteo y clasificación de los eventos según su Event ID.
+2. Conteo y clasificación de eventos según su Event ID.
 3. Detección de intentos fallidos de autenticación seguidos de un inicio de sesión exitoso.
 4. Identificación de cuentas creadas y posteriormente agregadas al grupo `Administrators`.
 5. Detección de comandos PowerShell que utilizan `-EncodedCommand`.
 6. Identificación de accesos a recursos compartidos.
 7. Detección de instalación de nuevos servicios.
-8. Correlación de eventos que ocurren después de la creación de cuentas con privilegios administrativos.
-9. Asignación de una puntuación de riesgo basada en los eventos encontrados.
-10. Generación automática de las alertas y del informe de investigación.
+8. Correlación temporal de actividades posteriores a la creación de cuentas administrativas.
+9. Asignación de puntuaciones de riesgo mediante reglas heurísticas.
+10. Generación automática de alertas e informe de investigación.
 
 ## Resultados de la investigación
 
-En total se analizaron **19 eventos** y se encontraron **6 hallazgos**:
+Se analizaron **19 eventos** y se identificaron **6 hallazgos** durante la investigación.
 
 | Severidad | Cantidad |
-| --------- | -------- |
+|---|---:|
 | Alta | 5 |
 | Media | 1 |
 | **Total** | **6** |
 
 ### Principales hallazgos
 
-Durante el análisis se encontraron los siguientes comportamientos:
+Durante el análisis se identificaron los siguientes comportamientos:
 
 - Dos intentos fallidos de autenticación seguidos de un inicio de sesión exitoso para `aramos`.
 - Creación de la cuenta `soporte2` y posterior asignación de privilegios administrativos.
@@ -90,28 +90,45 @@ Durante el análisis se encontraron los siguientes comportamientos:
 - Acceso al recurso compartido `\\SRV-FILES\Documentos`.
 - Instalación del servicio `RemoteAccessHelper`.
 
-Estos eventos fueron analizados en conjunto para determinar si existía una relación temporal o una posible secuencia de actividad sospechosa.
+Estos eventos fueron analizados en conjunto para identificar relaciones temporales y posibles secuencias de actividad sospechosa.
+
+### Clasificación de alertas
+
+El archivo `alertas_soc.csv` contiene alertas individuales clasificadas según el tipo de evento:
+
+| Event ID / Actividad | Severidad asignada |
+|---|---|
+| 4625 – Inicio de sesión fallido | Media |
+| 4720 – Creación de cuenta | Alta |
+| 4732 – Incorporación a grupo local | Alta |
+| 4688 – PowerShell con `-EncodedCommand` | Alta |
+| 5140 – Acceso a recurso compartido | Media |
+| 4697 – Instalación de servicio | Alta |
+
+Esta clasificación corresponde a las reglas definidas para cada tipo de alerta. No debe confundirse con el resumen de hallazgos del informe, que agrupa comportamientos relacionados durante la investigación.
 
 ### Puntuación de riesgo
 
-Para este laboratorio utilicé una puntuación heurística basada en los eventos y comportamientos detectados:
+Para este laboratorio implementé una puntuación heurística basada en los eventos y comportamientos detectados.
 
 | Cuenta | Puntuación | Nivel |
-| ------------ | ---------- | ----- |
+|---|---:|---|
 | soporte2 | 95 | Alto |
 | backup_admin | 65 | Alto |
 | aramos | 55 | Alto |
 | admin | 10 | Bajo |
 
-Las puntuaciones son **propias de este laboratorio y tienen fines educativos**. No representan una probabilidad real de compromiso ni utilizan una escala de riesgo estandarizada.
+La puntuación representa un valor acumulado por cuenta según las reglas implementadas. Por lo tanto, puede repetirse en distintas alertas de un mismo usuario.
+
+Estas puntuaciones son propias del laboratorio y tienen fines educativos. No representan una probabilidad real de compromiso ni utilizan una escala de riesgo estandarizada.
 
 ## Cómo ejecutar el laboratorio
 
 ### Requisitos
 
 - Python 3.x
-- Visual Studio Code (opcional)
 - Windows
+- Visual Studio Code (opcional)
 
 ### Ejecución
 
@@ -130,19 +147,20 @@ El script procesa el archivo `windows_events.csv` y genera automáticamente:
 
 ## Conclusión
 
-Este laboratorio me permitió practicar una investigación básica de seguridad utilizando eventos de Windows y Python.
+Este laboratorio me permitió practicar una investigación básica de eventos de Windows utilizando Python.
 
-A partir de los registros pude identificar diferentes comportamientos sospechosos, relacionar eventos por usuario y tiempo y generar alertas a partir de reglas definidas previamente.
+A partir de los registros pude identificar comportamientos sospechosos, relacionar eventos por usuario y tiempo, aplicar reglas de detección y generar alertas e informes.
 
-El ejercicio representa un flujo de trabajo básico que puede aplicarse a algunas de las tareas que realiza un **SOC Analyst L1**, especialmente en el análisis inicial de eventos, la detección de comportamientos anómalos y la documentación de incidentes.
+El ejercicio representa un flujo de trabajo básico relacionado con algunas de las tareas de un **SOC Analyst L1**, especialmente el análisis inicial de eventos, la identificación de comportamientos anómalos y la documentación de hallazgos.
 
 ## Limitaciones
 
 - Los registros utilizados son sintéticos y fueron creados únicamente con fines educativos.
+- Las direcciones IP pertenecen a rangos reservados para documentación y no representan equipos reales.
 - Las detecciones utilizan reglas y heurísticas simples.
-- La presencia de un evento sospechoso no significa necesariamente que exista una actividad maliciosa.
+- La presencia de un evento sospechoso no demuestra necesariamente una actividad maliciosa.
 - Las puntuaciones de riesgo no corresponden a un modelo de scoring validado.
-- En un entorno real sería necesario contar con más información del endpoint, usuario, procesos, red y contexto del incidente antes de determinar si una actividad representa un compromiso real.
+- En un entorno real sería necesario contar con información adicional del endpoint, usuario, procesos, red y contexto del incidente antes de determinar si existe un compromiso.
 
 ---
 
