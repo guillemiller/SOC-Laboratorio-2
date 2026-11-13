@@ -1,0 +1,12 @@
+﻿Fecha,Cuenta,Event ID,Severidad,Puntuacion,Descripcion
+2026-11-03 09:15:10,aramos,4625,MEDIA,55,Incorrect password
+2026-11-03 09:15:32,aramos,4625,MEDIA,55,Incorrect password
+2026-11-03 09:18:14,aramos,4720,ALTA,55,New account: soporte2
+2026-11-03 09:19:02,aramos,4732,ALTA,55,Account: soporte2; Group: Administrators
+2026-11-03 09:23:40,admin,4625,MEDIA,10,Incorrect password
+2026-11-03 09:24:12,admin,4625,MEDIA,10,Incorrect password
+2026-11-03 09:25:10,soporte2,4688,ALTA,95,Process: powershell.exe; Command: powershell.exe -EncodedCommand
+2026-11-03 09:25:18,soporte2,4720,ALTA,95,New account: backup_admin
+2026-11-03 09:25:22,soporte2,4732,ALTA,95,Account: backup_admin; Group: Administrators
+2026-11-03 09:28:30,backup_admin,5140,MEDIA,65,Share: \\SRV-FILES\Documentos
+2026-11-03 09:29:00,backup_admin,4697,ALTA,65,Service: RemoteAccessHelper
